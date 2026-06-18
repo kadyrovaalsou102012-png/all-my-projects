@@ -1,0 +1,181 @@
+import random
+import time
+
+users = {}
+
+def register():
+    username = input("Введите имя пользователя: ")
+    
+    if username in users:
+        print("Пользователь уже существует!")
+        return
+        
+    password = input("Введите пароль: ")
+    
+    if len(password) < 5:
+        print("Пароль должен быть не короче 5 символов!")
+        return
+        
+    if not password.isalnum():
+        print("Пароль должен содержать только латинские буквы и цифры!")
+        return
+        
+    users[username] = {
+        "password": password,
+        "cards": [],
+        "notes": []
+    }
+    
+    print("Регистрация успешная!")
+
+def login():
+    username = input("Введите имя пользователя: ")
+    password = input("Введите пароль: ")
+    
+    if username in users and users[username]["password"] == password:
+        print("Вход выполнен!")
+        return username
+    else:
+        print("Неверные данные!")
+        return None
+
+def add_card(current_user):
+    question = input("Введите вопрос: ")
+    answer = input("Введите ответ: ")
+    
+    card = {
+        "question": question,
+        "answer": answer
+    }
+    
+    users[current_user]["cards"].append(card)
+    print("Карточка добавлена!")
+
+def get_random_card(current_user):
+    cards = users[current_user]["cards"]
+    
+    if not cards:
+        print("Карточек нет!")
+        return
+        
+    card = random.choice(cards)
+    print("Вопрос:", card["question"])
+    input("Нажмите Enter, чтобы увидеть ответ...")
+    print("Ответ:", card["answer"])
+
+def start_quiz(current_user):
+    cards = users[current_user]["cards"]
+    
+    if not cards:
+        print("Нет карточек для викторины!")
+        return
+        
+    score = 0
+    print("Викторина началась! На каждый вопрос 30 секунд.")
+    
+    for card in cards:
+        print("\nВопрос:", card["question"])
+        start_time = time.time()
+        
+        answer = input("Ваш ответ: ")
+        end_time = time.time()
+        
+        if end_time - start_time > 30:
+            print("Время вышло!")
+            continue
+            
+        if answer.strip().lower() == card["answer"].strip().lower():
+            print("Правильно!")
+            score += 1
+        else:
+            print("Неправильно! Правильный ответ:", card["answer"])
+            
+    print("\nВикторина окончена!")
+    print("Правильных ответов:", score)
+
+def add_note(current_user):
+    note = input("Введите текст заметки: ")
+    users[current_user]["notes"].append(note)
+    print("Заметка сохранена!")
+
+def view_notes(current_user):
+    notes = users[current_user]["notes"]
+    
+    if not notes:
+        print("Заметок нет.")
+        return
+        
+    for i, note in enumerate(notes, 1):
+        print(f"{i}. {note}")
+
+def delete_note(current_user):
+    view_notes(current_user)
+    notes = users[current_user]["notes"]
+    
+    if not notes:
+        return
+        
+    try:
+        index = int(input("Введите номер заметки для удаления: "))
+        if 1 <= index <= len(notes):
+            notes.pop(index - 1)
+            print("Заметка удалена.")
+        else:
+            print("Неверный номер.")
+    except ValueError:
+        print("Введите число!")
+
+def user_menu(current_user):
+    while True:
+        print("\n-- МЕНЮ ПОЛЬЗОВАТЕЛЯ --")
+        print("1. Добавить карточку")
+        print("2. Случайная карточка")
+        print("3. Викторина")
+        print("4. Добавить заметку")
+        print("5. Просмотреть заметки")
+        print("6. Удалить заметку")
+        print("7. Выйти")
+        
+        choice = input("Выберите действие: ")
+        
+        if choice == "1":
+            add_card(current_user)
+        elif choice == "2":
+            get_random_card(current_user)
+        elif choice == "3":
+            start_quiz(current_user)
+        elif choice == "4":
+            add_note(current_user)
+        elif choice == "5":
+            view_notes(current_user)
+        elif choice == "6":
+            delete_note(current_user)
+        elif choice == "7":
+            break
+        else:
+            print("Неверный выбор.")
+  def main():
+    current_user = None
+    
+    while True:
+        print("\n1. Регистрация")
+        print("2. Вход")
+        print("3. Выход")
+        
+        choice = input("Выберите действие: ")
+        
+        if choice == "1":
+            register()
+        elif choice == "2":
+            current_user = login()
+            if current_user:
+                user_menu(current_user)
+        elif choice == "3":
+            print("До свидания!")
+            break
+        else:
+            print("Неверный выбор.")
+
+if name == "main":
+    main()
+          
